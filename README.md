@@ -1,14 +1,11 @@
-# STM32 without CubeIDE
+# STM32 without CubeIDE (Smart Pharmacy Project)
 
-Code for the blog post series "STM32 without CubeIDE" at https://kleinembedded.com
+This Project is a fork of `https://github.com/kristianklein/stm32-without-cubeide`
 
-- [Part 1: The bare necessities](https://kleinembedded.com/stm32-without-cubeide-part-1-the-bare-necessities)
-- [Part 2: CMSIS, make and clock configuration](https://kleinembedded.com/stm32-without-cubeide-part-2-cmsis-make-and-clock-configuration)
-- [Part 3: The C Standard Library and printf](https://kleinembedded.com/stm32-without-cubeide-part-3-the-c-standard-library-and-printf)
-- [Part 4: CMake, FPU and STM32 libraries](https://kleinembedded.com/stm32-without-cubeide-part-4-cmake-fpu-and-stm32-libraries)
+This version targets **STM32F103C8T6** (Cortex-M3, no FPU) using STM32CubeF1.
 
 ## Initializing submodules
-From part 4 of this series, the official STM32CubeF4 package is added as a git submodule. This makes it easy to get the newest updates and bugfixes whenever a new version is published.
+The official STM32CubeF1 package is added as a git submodule. This makes it easy to get the newest updates and bugfixes whenever a new version is published.
 
 After cloning the stm32-without-cubeide repository, initialize the top-level submodule:
 
@@ -17,15 +14,15 @@ After cloning the stm32-without-cubeide repository, initialize the top-level sub
 Enter the submodule and initialize the CMSIS device driver and the HAL/LL library:
 
 ```shell
-cd vendor/STM32CubeF4
-git submodule update --init Drivers/CMSIS/Device/ST/STM32F4xx/ Drivers/STM32F4xx_HAL_Driver/
+cd vendor/STM32CubeF1
+git submodule update --init Drivers/CMSIS/Device/ST/STM32F1xx/ Drivers/STM32F1xx_HAL_Driver/
 ```
 
-In order to update STM32CubeF4 to the newest version, simply navigate to the submodule's root directory, pull from remote and update the 
+In order to update STM32CubeF1 to the newest version, simply navigate to the submodule's root directory, pull from remote and update the 
 (already initialized) submodules:
 
 ```shell
-cd vendor/STM32CubeF4
+cd vendor/STM32CubeF1
 git pull origin master
 git submodule update --recursive
 ```
@@ -36,7 +33,7 @@ above, you can configure and build the project with CMake from the root
 project directory:
 
 ```shell
-cmake -Bbuild -DCMAKE_TOOLCHAIN_FILE=cmake/stm32f410rb.cmake
+cmake -Bbuild -DCMAKE_TOOLCHAIN_FILE=cmake/stm32f103c8.cmake
 cmake --build build
 ```
 

@@ -9,10 +9,10 @@ add_compile_options(-g -O0) # Global compile flags
 set(BLINK_SOURCES
     main.c
     core/syscalls.c
-    core/startup_stm32f410rx.s
-    core/system_stm32f4xx.c
-    core/stm32f4xx_hal_msp.c
-    core/stm32f4xx_it.c)
+    core/startup_stm32f103xb.s
+    core/system_stm32f1xx.c
+    core/stm32f1xx_hal_msp.c
+    core/stm32f1xx_it.c)
 
 add_executable(blink ${BLINK_SOURCES})
 
@@ -26,14 +26,14 @@ target_compile_options(blink PRIVATE
     --specs=nano.specs)
 
 target_link_options(blink PRIVATE
-    -T ${CMAKE_SOURCE_DIR}/core/STM32F410RBTx_FLASH.ld 
+    -T ${CMAKE_SOURCE_DIR}/core/STM32F103C8Tx_FLASH.ld 
     -u _printf_float)
 
-include(cmake/stm32cubef4.cmake)
-target_link_libraries(blink stm32cubef4)
+include(cmake/stm32cubef1.cmake)
+target_link_libraries(blink stm32cubef1)
 
 set(PROGRAMMER openocd)
-set(PROGRAMMER_FLAGS -f interface/stlink.cfg -f target/stm32f4x.cfg)
+set(PROGRAMMER_FLAGS -f interface/stlink.cfg -f target/stm32f1x.cfg)
 
 add_custom_target(flash
     COMMAND ${PROGRAMMER} ${PROGRAMMER_FLAGS} -c "program $<TARGET_FILE:blink> verify reset exit"
