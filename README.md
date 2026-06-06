@@ -42,3 +42,16 @@ Then flash the program to the target with:
 ```shell
 cmake --build build --target flash
 ```
+
+## Resources
+
+### Official Documentation (STMicroelectronics)
+- [STM32F10xxx Flash Programming Manual (PM0075)](https://www.st.com/resource/en/programming_manual/pm0075-stm32f10xxx-flash-memory-microcontrollers-stmicroelectronics.pdf)
+- [STM32F10xxx Reference Manual (RM0008)](https://www.st.com/resource/en/reference_manual/rm0008-stm32f101xx-stm32f102xx-stm32f103xx-stm32f105xx-and-stm32f107xx-advanced-armbased-32bit-mcus-stmicroelectronics.pdf)
+- [STM32F103C8 Datasheet](https://www.st.com/resource/en/datasheet/stm32f103c8.pdf)
+
+### Bare-Metal STM32 Development (Without CubeIDE)
+- [Part 1: The Bare Necessities](https://kleinembedded.com/stm32-without-cubeide-part-1-the-bare-necessities/)
+- [Part 2: CMSIS, Make, and Clock Configuration](https://kleinembedded.com/stm32-without-cubeide-part-2-cmsis-make-and-clock-configuration/)
+- [Part 3: The C Standard Library and printf](https://kleinembedded.com/stm32-without-cubeide-part-3-the-c-standard-library-and-printf/)
+- [Part 4: CMake, FPU, and STM32 Libraries](https://kleinembedded.com/stm32-without-cubeide-part-4-cmake-fpu-and-stm32-libraries/)
