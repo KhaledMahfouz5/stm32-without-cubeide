@@ -39,3 +39,8 @@ add_custom_target(flash
     COMMAND ${PROGRAMMER} ${PROGRAMMER_FLAGS} -c "program $<TARGET_FILE:blink> verify reset exit"
     DEPENDS blink
     VERBATIM)
+
+add_custom_target(gdb_server
+    COMMAND ${PROGRAMMER} ${PROGRAMMER_FLAGS} 
+    DEPENDS blink
+    VERBATIM)

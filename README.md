@@ -43,6 +43,19 @@ Then flash the program to the target with:
 cmake --build build --target flash
 ```
 
+If You Want To debug with gbd run the commands below
+
+- initialize gdb server
+
+```shell
+cmake --build build --target gdb_server
+```
+
+- run another Terminal Session to run the gdb client
+```shell
+arm-none-eabi-gdb build/blink.elf
+```
+
 ## Resources
 
 ### Official Documentation (STMicroelectronics)
