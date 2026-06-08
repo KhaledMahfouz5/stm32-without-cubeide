@@ -12,3 +12,6 @@ compile_commands.json
 # Temporary files
 /tmp
 /temp
+
+# Dir For Other Stuff (not needed for the project)
+other/
