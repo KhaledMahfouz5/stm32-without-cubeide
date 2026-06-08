@@ -1,8 +1,9 @@
-# Editor settings
+# Editor and agent settings
 .vscode
 .project
 .settings
 compile_commands.json
+.qwen/
 
 # Build output
 *.o
