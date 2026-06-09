@@ -53,7 +53,7 @@ cmake --build build --target gdb_server
 
 - run another Terminal Session to run the gdb client
 ```shell
-arm-none-eabi-gdb build/blink.elf
+arm-none-eabi-gdb -x .gdbinit build/blink.elf
 ```
 
 ## Resources
