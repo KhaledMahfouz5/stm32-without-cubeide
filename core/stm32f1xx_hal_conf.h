@@ -18,6 +18,8 @@ extern "C" {
 #define HAL_DMA_MODULE_ENABLED
 #define HAL_UART_MODULE_ENABLED
 #define HAL_CORTEX_MODULE_ENABLED
+#define HAL_I2C_MODULE_ENABLED
+#define HAL_TIM_MODULE_ENABLED
 #define HAL_FLASH_MODULE_ENABLED
 
 #if !defined(HSE_VALUE)
@@ -69,6 +71,12 @@ extern "C" {
 #ifdef HAL_FLASH_MODULE_ENABLED
   #include "stm32f1xx_hal_flash.h"
   #include "stm32f1xx_hal_flash_ex.h"
+#endif
+#ifdef HAL_I2C_MODULE_ENABLED
+  #include "stm32f1xx_hal_i2c.h"
+#endif
+#ifdef HAL_TIM_MODULE_ENABLED
+  #include "stm32f1xx_hal_tim.h"
 #endif
 
 /* Exported macro ------------------------------------------------------------*/

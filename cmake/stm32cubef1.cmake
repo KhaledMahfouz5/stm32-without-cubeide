@@ -11,7 +11,10 @@ set(HAL_SOURCES
     "${HAL_SOURCE_DIR}/stm32f1xx_hal_uart.c"
     "${HAL_SOURCE_DIR}/stm32f1xx_hal_dma.c"
     "${HAL_SOURCE_DIR}/stm32f1xx_hal_flash.c"
-    "${HAL_SOURCE_DIR}/stm32f1xx_hal_flash_ex.c")
+    "${HAL_SOURCE_DIR}/stm32f1xx_hal_flash_ex.c"
+    "${HAL_SOURCE_DIR}/stm32f1xx_hal_i2c.c"
+    "${HAL_SOURCE_DIR}/stm32f1xx_hal_tim.c"
+    "${HAL_SOURCE_DIR}/stm32f1xx_hal_tim_ex.c")
 
 add_library(stm32cubef1 STATIC ${HAL_SOURCES})
 

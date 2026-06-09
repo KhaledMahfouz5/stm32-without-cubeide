@@ -12,7 +12,14 @@ set(BLINK_SOURCES
     core/startup_stm32f103xb.s
     core/system_stm32f1xx.c
     core/stm32f1xx_hal_msp.c
-    core/stm32f1xx_it.c)
+    core/stm32f1xx_it.c
+    keypad.c
+    servo.c
+    lcd.c
+    dht11.c
+    actuator.c
+    state_machine.c
+    error_handler.c)
 
 add_executable(blink ${BLINK_SOURCES})
 
