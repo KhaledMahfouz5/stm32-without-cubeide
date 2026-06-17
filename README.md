@@ -20,8 +20,8 @@ A medication dispenser with two timed boxes, password-protected access, and envi
 | DHT11 Data       | PC13      | Single-wire sensor         |
 | Box A LED        | PB10      | Active-high (box indicator)|
 | Box B LED        | PB11      | Active-high (box indicator)|
-| Servo 1 (Box A)  | PB0       | TIM3_CH1 PWM (50 Hz)       |
-| Servo 2 (Box B)  | PB1       | TIM3_CH2 PWM (50 Hz)       |
+| Servo 1 (Box A)  | PB0       | TIM3_CH3 PWM (50 Hz)       |
+| Servo 2 (Box B)  | PB1       | TIM3_CH4 PWM (50 Hz)       |
 | I2C LCD SCL      | PB6       | I2C1, 0x27 address         |
 | I2C LCD SDA      | PB7       | I2C1                       |
 
@@ -35,7 +35,7 @@ A medication dispenser with two timed boxes, password-protected access, and envi
 | `dht11.c/h`    | DHT11 single-wire protocol with DWT timing |
 | `actuator.c/h` | Box active LED control  |
 | `state_machine.c` | Password entry, timer setup, monitoring, box activation |
-| `error_handler.c` | Fatal error — LED on + LCD message, then halt |
+| `error_handler.c` | Fatal error — LCD error message, then halt |
 
 ## Initializing submodules
 The official STM32CubeF1 package is added as a git submodule. This makes it easy to get the newest updates and bugfixes whenever a new version is published.
@@ -58,6 +58,48 @@ In order to update STM32CubeF1 to the newest version, simply navigate to the sub
 cd vendor/STM32CubeF1
 git pull origin master
 git submodule update --recursive
+```
+
+## State Machine
+
+```
+                    ┌──────────────┐
+                    │ WAIT_PASSWORD│
+                    │  (4 digits)  │
+                    └──────┬───────┘
+                           │
+                    ┌──────▼───────┐
+                    │ SET_TIMER_1  │
+                    │ (Box A secs) │
+                    └──────┬───────┘
+                           │
+                    ┌──────▼───────┐
+                    │ SET_TIMER_2  │
+                    │ (Box B secs) │
+                    └──────┬───────┘
+                           │
+                    ┌──────▼───────┐
+               ┌────│   MONITOR    │
+               │    │ (countdown)  │
+               │    └──┬───────┬───┘
+               │       │       │
+          Box A │expired│       │Box B expired
+               │       │       │
+        ┌──────▼──┐ ┌──▼───────▼──┐
+        │ACTIVE_1  │ │  ACTIVE_2  │
+        │servo 60° │ │  servo 60° │
+        │LED A on  │ │  LED B on  │
+        │enter PIN │ │  enter PIN │
+        │press *   │ │  press *   │
+        │servo 150°│ │  servo 150°│
+        │LED A off │ │  LED B off │
+        └────┬─────┘ └─────┬──────┘
+             │             │
+             └──────┬──────┘
+                    │
+              ┌─────▼─────┐
+              │  MONITOR  │  (loop)
+              └───────────┘
 ```
 
 ## Building with CMake
