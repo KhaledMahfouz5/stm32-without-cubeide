@@ -24,6 +24,9 @@ void Keypad_Init(void) {
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+    // Drive all rows high to prevent phantom reads during idle
+    GPIOA->BSRR = KEYPAD_ROW_PINS;
     
     // Configure columns as input with pull-up
     GPIO_InitStruct.Pin = KEYPAD_COL_PINS;

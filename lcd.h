@@ -3,7 +3,12 @@
 
 #include "stm32f1xx_hal.h"
 
-#define LCD_ADDR 0x27 << 1 // I2C address shifted left
+#define LCD_ADDR 0x27
+
+#define LCD_BL 0x08
+#define LCD_EN 0x04
+#define LCD_RW 0x02
+#define LCD_RS 0x01
 
 void LCD_Init(I2C_HandleTypeDef* hi2c);
 void LCD_Command(uint8_t cmd);

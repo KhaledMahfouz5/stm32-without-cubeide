@@ -1,50 +1,60 @@
 #include "lcd.h"
 #include "main.h"
 
-// LCD command set
-#define LCD_CLEARDISPLAY 0x01
-#define LCD_RETURNHOME 0x02
-#define LCD_ENTRYMODESET 0x04
-#define LCD_DISPLAYCONTROL 0x08
-#define LCD_CURSORON 0x02
-#define LCD_DISPLAYON 0x04
-#define LCD_DISPLAYOFF 0x00
-#define LCD_FUNCTIONSET 0x20
-#define LCD_8BITMODE 0x10
-#define LCD_2LINE 0x08
-
 static I2C_HandleTypeDef* lcd_i2c;
+static uint8_t lcd_backlight = LCD_BL;
+
+static void LCD_WriteNibble(uint8_t nibble, uint8_t rs) {
+    uint8_t data = nibble | lcd_backlight | rs;
+
+    uint8_t buf[1];
+    buf[0] = data | LCD_EN;
+    HAL_I2C_Master_Transmit(lcd_i2c, LCD_ADDR << 1, buf, 1, 100);
+
+    buf[0] = data & ~LCD_EN;
+    HAL_I2C_Master_Transmit(lcd_i2c, LCD_ADDR << 1, buf, 1, 100);
+}
+
+static void LCD_WriteByte(uint8_t byte, uint8_t rs) {
+    uint8_t high = byte & 0xF0;
+    uint8_t low = (byte << 4) & 0xF0;
+
+    LCD_WriteNibble(high, rs);
+    LCD_WriteNibble(low, rs);
+}
 
 void LCD_Init(I2C_HandleTypeDef* hi2c) {
     lcd_i2c = hi2c;
 
-    // Initialize I2C peripheral
-    HAL_I2C_Init(hi2c);
+    HAL_Delay(50);
 
-    // LCD initialization sequence
-    LCD_Command(LCD_CLEARDISPLAY);
-    HAL_Delay(2);
-
-    LCD_Command(LCD_FUNCTIONSET | LCD_8BITMODE | LCD_2LINE);
+    LCD_WriteNibble(0x30, 0);
     HAL_Delay(5);
+    LCD_WriteNibble(0x30, 0);
+    HAL_Delay(1);
+    LCD_WriteNibble(0x30, 0);
+    HAL_Delay(1);
+    LCD_WriteNibble(0x20, 0);
+    HAL_Delay(1);
 
-    LCD_Command(LCD_DISPLAYCONTROL | LCD_DISPLAYON | LCD_CURSORON);
-    HAL_Delay(5);
-
-    LCD_Command(LCD_CLEARDISPLAY);
+    LCD_WriteByte(0x28, 0);
+    HAL_Delay(1);
+    LCD_WriteByte(0x08, 0);
+    HAL_Delay(1);
+    LCD_WriteByte(0x01, 0);
     HAL_Delay(2);
-
-    LCD_Command(LCD_ENTRYMODESET); // Increment cursor
+    LCD_WriteByte(0x06, 0);
+    HAL_Delay(1);
+    LCD_WriteByte(0x0C, 0);
+    HAL_Delay(1);
 }
 
 void LCD_Command(uint8_t cmd) {
-    uint8_t buffer[2] = {0x80, cmd}; // 0x80 = instruction mode
-    HAL_I2C_Master_Transmit(lcd_i2c, LCD_ADDR, buffer, 2, HAL_MAX_DELAY);
+    LCD_WriteByte(cmd, 0);
 }
 
 void LCD_WriteChar(uint8_t data) {
-    uint8_t buffer[2] = {0x40, data}; // 0x40 = data mode
-    HAL_I2C_Master_Transmit(lcd_i2c, LCD_ADDR, buffer, 2, HAL_MAX_DELAY);
+    LCD_WriteByte(data, LCD_RS);
 }
 
 void LCD_Print(const char* str) {
@@ -54,7 +64,8 @@ void LCD_Print(const char* str) {
 }
 
 void LCD_Clear(void) {
-    LCD_Command(LCD_CLEARDISPLAY);
+    LCD_Command(0x01);
+    HAL_Delay(2);
 }
 
 void LCD_SetCursor(uint8_t col, uint8_t row) {
