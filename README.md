@@ -28,15 +28,17 @@ A medication dispenser with two timed boxes, password-protected access, and envi
 
 ## Project Structure
 
-| Module         | Responsibility                        |
-|----------------|---------------------------------------|
-| `keypad.c/h`   | 4×4 matrix scan with debounce         |
-| `servo.c/h`    | PWM control via TIM3 (handle stored internally) |
-| `lcd.c/h`      | I2C 16×2 LCD (handle stored internally) |
-| `dht11.c/h`    | DHT11 single-wire protocol with DWT timing |
-| `actuator.c/h` | Box active LED control  |
-| `state_machine.c` | Password entry, timer setup, monitoring, box activation |
-| `error_handler.c` | Fatal error — LCD error message, then halt |
+| Module            | Responsibility                         |
+|-------------------|----------------------------------------|
+| `keypad.c/h`      | 4×4 matrix scan with debounce          |
+| `servo.c/h`       | PWM control via TIM3                   |
+| `lcd.c/h`         | I2C 16×2 LCD                           |
+| `dht11.c/h`       | DHT11 single-wire protocol             |
+| `actuator.c/h`    | Box active LED control                 |
+| `buzzer.c/h`      | DWT-based tone generator (PA2)         |
+| `error_handler.c` | Fatal error — LCD message, then halt   |
+| `state_machine.c` | Password, timers, monitor, box act.    |
+| `core/delay.c/h`  | DWT cycle-counter microsecond delay    |
 
 ## Initializing submodules
 The official STM32CubeF1 package is added as a git submodule. This makes it easy to get the newest updates and bugfixes whenever a new version is published.
