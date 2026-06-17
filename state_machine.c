@@ -180,8 +180,7 @@ static void handle_active_box(uint8_t box_id) {
     uint8_t servo_ch = (box_id == BOX_1) ? SERVO_CHANNEL_1 : SERVO_CHANNEL_2;
 
     Servo_Write(servo_ch, 60);
-    Box_Open(box_id);
-    StatusLED_On();
+    Box_LED_On(box_id);
 
     uint32_t start = HAL_GetTick();
     int authenticated = 0;
@@ -202,8 +201,7 @@ static void handle_active_box(uint8_t box_id) {
     }
 
     Servo_Write(servo_ch, 150);
-    Box_Close(box_id);
-    StatusLED_Off();
+    Box_LED_Off(box_id);
 
     if (box_id == BOX_1) {
         last_box1_activation = HAL_GetTick();

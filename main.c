@@ -6,7 +6,6 @@
 #include "lcd.h"
 #include "dht11.h"
 
-UART_HandleTypeDef uart2;
 I2C_HandleTypeDef hi2c1;
 TIM_HandleTypeDef htim3;
 
@@ -63,32 +62,15 @@ void main(void)
     clock_init();
     SystemCoreClockUpdate();
 
-    __HAL_RCC_GPIOC_CLK_ENABLE();
     __HAL_RCC_GPIOA_CLK_ENABLE();
+    __HAL_RCC_GPIOB_CLK_ENABLE();
+    __HAL_RCC_GPIOC_CLK_ENABLE();
 
     GPIO_InitTypeDef gpio_init = {0};
-    gpio_init.Pin = LED_PIN;
+    gpio_init.Pin = BOX_A_LED_PIN | BOX_B_LED_PIN;
     gpio_init.Mode = GPIO_MODE_OUTPUT_PP;
     gpio_init.Speed = GPIO_SPEED_FREQ_LOW;
-    HAL_GPIO_Init(LED_PORT, &gpio_init);
-
-    gpio_init.Pin = GPIO_PIN_8 | GPIO_PIN_9;
-    gpio_init.Mode = GPIO_MODE_OUTPUT_PP;
-    gpio_init.Speed = GPIO_SPEED_FREQ_LOW;
-    HAL_GPIO_Init(GPIOA, &gpio_init);
-
-    uart2.Instance = USART2;
-    uart2.Init.BaudRate = 115200;
-    uart2.Init.Mode = UART_MODE_TX;
-    uart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
-    uart2.Init.WordLength = UART_WORDLENGTH_8B;
-    uart2.Init.StopBits = UART_STOPBITS_1;
-    uart2.Init.Parity = UART_PARITY_NONE;
-    if (HAL_UART_Init(&uart2) != HAL_OK)
-        while(1);
-
-    USART2->DR = 0;
-    while (!(USART2->SR & USART_SR_TC));
+    HAL_GPIO_Init(GPIOB, &gpio_init);
 
     MX_I2C1_Init();
     MX_TIM3_Init();

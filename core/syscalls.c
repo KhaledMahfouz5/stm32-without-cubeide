@@ -1,6 +1,5 @@
 #include <sys/stat.h>
 #include <sys/times.h>
-#include "main.h"
 #include <errno.h>
 #undef errno
 extern int errno;
@@ -109,6 +108,6 @@ int _wait(int *status) {
 
 int _write(int file, char *ptr, int len) {
   (void) file;
-  HAL_UART_Transmit(&uart2, ptr, len, HAL_MAX_DELAY); 
+  (void) ptr;
   return len;
 }

@@ -10,7 +10,7 @@ const char Keypad_Map[KEYPAD_ROWS][KEYPAD_COLS] = {
 };
 
 GPIO_TypeDef* Keypad_Row_Port[] = {GPIOA, GPIOA, GPIOA, GPIOA};
-uint16_t Keypad_Row_Pin[] = {GPIO_PIN_0, GPIO_PIN_1, GPIO_PIN_2, GPIO_PIN_3};
+uint16_t Keypad_Row_Pin[] = {GPIO_PIN_0, GPIO_PIN_1, GPIO_PIN_8, GPIO_PIN_9};
 
 GPIO_TypeDef* Keypad_Col_Port[] = {GPIOA, GPIOA, GPIOA, GPIOA};
 uint16_t Keypad_Col_Pin[] = {GPIO_PIN_4, GPIO_PIN_5, GPIO_PIN_6, GPIO_PIN_7};

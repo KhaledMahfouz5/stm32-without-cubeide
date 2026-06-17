@@ -7,25 +7,23 @@ Fork of `https://github.com/kristianklein/stm32-without-cubeide` targeting **STM
 A medication dispenser with two timed boxes, password-protected access, and environmental monitoring:
 
 - Set independent countdown timers for Box A and Box B via keypad
-- At expiry, the box servo opens and a relay activates — must enter correct 4-digit PIN to unlock
+- At expiry, the box servo opens and the box LED lights up — must enter correct 4-digit PIN to unlock
 - LCD shows remaining time, temperature (DHT11), and humidity
-- Alarm LED + relay outputs for external actuators
+- Box LEDs indicate which compartment is active
 
 ## Pin Mapping
 
-| Function       | STM32 Pin | Notes                      |
-|----------------|-----------|----------------------------|
-| Keypad Rows    | PA0–PA3   | 4×4 matrix rows (output)   |
-| Keypad Columns | PA4–PA7   | Matrix columns (input, PU) |
-| DHT11 Data     | PA3       | Single-wire sensor         |
-| Box A Relay    | PA8       | Active-high output         |
-| Box B Relay    | PA9       | Active-high output         |
-| Servo 1 (Box A)| PB0       | TIM3_CH1 PWM (50 Hz)       |
-| Servo 2 (Box B)| PB1       | TIM3_CH2 PWM (50 Hz)       |
-| I2C LCD SCL    | PB6       | I2C1, 0x27 address         |
-| I2C LCD SDA    | PB7       | I2C1                       |
-| Status LED     | PC13      | On-board LED (active low)  |
-| UART (debug)   | PA2/PA3   | USART2, 115200 baud        |
+| Function         | STM32 Pin | Notes                      |
+|------------------|-----------|----------------------------|
+| Keypad Rows      | PA0,PA1,PA8,PA9 | 4×4 matrix rows (output)   |
+| Keypad Columns   | PA4–PA7   | Matrix columns (input, PU) |
+| DHT11 Data       | PC13      | Single-wire sensor         |
+| Box A LED        | PB10      | Active-high (box indicator)|
+| Box B LED        | PB11      | Active-high (box indicator)|
+| Servo 1 (Box A)  | PB0       | TIM3_CH1 PWM (50 Hz)       |
+| Servo 2 (Box B)  | PB1       | TIM3_CH2 PWM (50 Hz)       |
+| I2C LCD SCL      | PB6       | I2C1, 0x27 address         |
+| I2C LCD SDA      | PB7       | I2C1                       |
 
 ## Project Structure
 
@@ -35,7 +33,7 @@ A medication dispenser with two timed boxes, password-protected access, and envi
 | `servo.c/h`    | PWM control via TIM3 (handle stored internally) |
 | `lcd.c/h`      | I2C 16×2 LCD (handle stored internally) |
 | `dht11.c/h`    | DHT11 single-wire protocol with DWT timing |
-| `actuator.c/h` | Box relay and status LED abstraction  |
+| `actuator.c/h` | Box active LED control  |
 | `state_machine.c` | Password entry, timer setup, monitoring, box activation |
 | `error_handler.c` | Fatal error — LED on + LCD message, then halt |
 
