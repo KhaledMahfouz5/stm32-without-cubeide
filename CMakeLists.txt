@@ -19,7 +19,8 @@ set(BLINK_SOURCES
     dht11.c
     actuator.c
     state_machine.c
-    error_handler.c)
+    error_handler.c
+    buzzer.c)
 
 add_executable(blink ${BLINK_SOURCES})
 

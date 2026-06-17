@@ -5,6 +5,7 @@
 #include "servo.h"
 #include "lcd.h"
 #include "dht11.h"
+#include "buzzer.h"
 
 I2C_HandleTypeDef hi2c1;
 TIM_HandleTypeDef htim3;
@@ -75,6 +76,7 @@ void main(void)
     MX_I2C1_Init();
     MX_TIM3_Init();
     Keypad_Init();
+    Buzzer_Init();
     LCD_Init(&hi2c1);
     state_machine_init();
 

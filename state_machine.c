@@ -5,6 +5,7 @@
 #include "lcd.h"
 #include "dht11.h"
 #include "actuator.h"
+#include "buzzer.h"
 
 typedef enum {
     STATE_WAIT_PASSWORD,
@@ -113,10 +114,12 @@ static void handle_monitor(void) {
     uint32_t current = HAL_GetTick();
 
     if (current - last_box1_activation >= timer_box1_ms) {
+        Buzzer_BoxA_Alert();
         current_state = STATE_ACTIVE_BOX_1;
         return;
     }
     if (current - last_box2_activation >= timer_box2_ms) {
+        Buzzer_BoxB_Alert();
         current_state = STATE_ACTIVE_BOX_2;
         return;
     }

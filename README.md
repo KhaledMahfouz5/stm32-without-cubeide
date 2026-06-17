@@ -22,6 +22,7 @@ A medication dispenser with two timed boxes, password-protected access, and envi
 | Box B LED        | PB11      | Active-high (box indicator)|
 | Servo 1 (Box A)  | PB0       | TIM3_CH3 PWM (50 Hz)       |
 | Servo 2 (Box B)  | PB1       | TIM3_CH4 PWM (50 Hz)       |
+| Buzzer           | PA2       | GPIO (DWT tone generator)  |
 | I2C LCD SCL      | PB6       | I2C1, 0x27 address         |
 | I2C LCD SDA      | PB7       | I2C1                       |
 
