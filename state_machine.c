@@ -34,9 +34,12 @@ static uint32_t parse_timer_input(void) {
             value = value * 10 + (key - '0');
             LCD_WriteChar(key);
             digit_count++;
+            while (Keypad_GetKey() != 0) {
+                HAL_Delay(10);
+            }
         }
     }
-    return value * 60 * 1000;
+    return value * 1000;
 }
 
 static void wait_for_keypad_release(void) {
@@ -67,7 +70,7 @@ static void handle_password_entry(void) {
 
 static void handle_timer_1_setup(void) {
     LCD_Clear();
-    LCD_Print("Box A (minutes):");
+    LCD_Print("Box A (seconds):");
     LCD_SetCursor(0, 1);
 
     timer_box1_ms = parse_timer_input();
@@ -79,7 +82,7 @@ static void handle_timer_1_setup(void) {
 
 static void handle_timer_2_setup(void) {
     LCD_Clear();
-    LCD_Print("Box B (minutes):");
+    LCD_Print("Box B (seconds):");
     LCD_SetCursor(0, 1);
 
     timer_box2_ms = parse_timer_input();
