@@ -6,9 +6,12 @@
 #include "lcd.h"
 #include "dht11.h"
 #include "buzzer.h"
+#include "actuator.h"
+#include "delay.h"
 
 I2C_HandleTypeDef hi2c1;
 TIM_HandleTypeDef htim3;
+DHT11_HandleTypeDef dht11;
 
 void clock_init(void);
 
@@ -73,10 +76,12 @@ void main(void)
     gpio_init.Speed = GPIO_SPEED_FREQ_LOW;
     HAL_GPIO_Init(GPIOB, &gpio_init);
 
+    DWT_Init();
     MX_I2C1_Init();
     MX_TIM3_Init();
     Keypad_Init();
     Buzzer_Init();
+    DHT11_Init(&dht11);
     LCD_Init(&hi2c1);
     state_machine_init();
 

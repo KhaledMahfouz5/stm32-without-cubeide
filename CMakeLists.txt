@@ -20,7 +20,8 @@ set(BLINK_SOURCES
     actuator.c
     state_machine.c
     error_handler.c
-    buzzer.c)
+    buzzer.c
+    core/delay.c)
 
 add_executable(blink ${BLINK_SOURCES})
 

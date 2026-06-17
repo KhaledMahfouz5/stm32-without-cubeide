@@ -1,11 +1,6 @@
 #include "buzzer.h"
 #include "main.h"
-
-static void delay_us(uint32_t us) {
-    uint32_t start = DWT->CYCCNT;
-    uint32_t cycles = us * (SystemCoreClock / 1000000);
-    while ((DWT->CYCCNT - start) < cycles);
-}
+#include "delay.h"
 
 void Buzzer_Init(void) {
     GPIO_InitTypeDef gpio = {0};
@@ -14,10 +9,6 @@ void Buzzer_Init(void) {
     gpio.Speed = GPIO_SPEED_FREQ_LOW;
     HAL_GPIO_Init(BUZZER_PORT, &gpio);
     HAL_GPIO_WritePin(BUZZER_PORT, BUZZER_PIN, GPIO_PIN_RESET);
-
-    CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
-    DWT->CYCCNT = 0;
-    DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
 }
 
 void Buzzer_Beep(uint32_t freq_hz, uint32_t duration_ms) {

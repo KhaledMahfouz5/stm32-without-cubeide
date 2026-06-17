@@ -7,6 +7,11 @@
 #include "actuator.h"
 #include "buzzer.h"
 
+typedef struct {
+    uint32_t timer_ms;
+    uint32_t last_activation;
+} BoxState;
+
 typedef enum {
     STATE_WAIT_PASSWORD,
     STATE_SET_TIMER_1,
@@ -17,12 +22,8 @@ typedef enum {
 } SystemState;
 
 static SystemState current_state = STATE_WAIT_PASSWORD;
-static uint32_t last_box1_activation = 0;
-static uint32_t last_box2_activation = 0;
+static BoxState boxes[2];
 static char password[4];
-static uint32_t timer_box1_ms = 0;
-static uint32_t timer_box2_ms = 0;
-static DHT11_HandleTypeDef dht11;
 
 static uint32_t parse_timer_input(void) {
     char key;
@@ -74,7 +75,7 @@ static void handle_timer_1_setup(void) {
     LCD_Print("Box A (seconds):");
     LCD_SetCursor(0, 1);
 
-    timer_box1_ms = parse_timer_input();
+    boxes[0].timer_ms = parse_timer_input();
     wait_for_keypad_release();
 
     HAL_Delay(250);
@@ -86,14 +87,14 @@ static void handle_timer_2_setup(void) {
     LCD_Print("Box B (seconds):");
     LCD_SetCursor(0, 1);
 
-    timer_box2_ms = parse_timer_input();
+    boxes[1].timer_ms = parse_timer_input();
     wait_for_keypad_release();
 
     HAL_Delay(250);
     LCD_Clear();
 
-    last_box1_activation = HAL_GetTick();
-    last_box2_activation = HAL_GetTick();
+    boxes[0].last_activation = HAL_GetTick();
+    boxes[1].last_activation = HAL_GetTick();
     current_state = STATE_MONITOR;
 }
 
@@ -113,12 +114,12 @@ static void display_remaining_time(uint32_t remaining_ms, int row) {
 static void handle_monitor(void) {
     uint32_t current = HAL_GetTick();
 
-    if (current - last_box1_activation >= timer_box1_ms) {
+    if (current - boxes[0].last_activation >= boxes[0].timer_ms) {
         Buzzer_BoxA_Alert();
         current_state = STATE_ACTIVE_BOX_1;
         return;
     }
-    if (current - last_box2_activation >= timer_box2_ms) {
+    if (current - boxes[1].last_activation >= boxes[1].timer_ms) {
         Buzzer_BoxB_Alert();
         current_state = STATE_ACTIVE_BOX_2;
         return;
@@ -134,12 +135,12 @@ static void handle_monitor(void) {
 
         LCD_SetCursor(0, 0);
         LCD_Print("A:");
-        uint32_t rem1 = timer_box1_ms - (current - last_box1_activation);
+        uint32_t rem1 = boxes[0].timer_ms - (current - boxes[0].last_activation);
         display_remaining_time(rem1, 0);
 
         LCD_SetCursor(0, 1);
         LCD_Print("B:");
-        uint32_t rem2 = timer_box2_ms - (current - last_box2_activation);
+        uint32_t rem2 = boxes[1].timer_ms - (current - boxes[1].last_activation);
         display_remaining_time(rem2, 1);
 
         if (dht_status == DHT11_OK) {
@@ -209,16 +210,12 @@ static void handle_active_box(uint8_t box_id) {
     Servo_Write(servo_ch, 150);
     Box_LED_Off(box_id);
 
-    if (box_id == BOX_1) {
-        last_box1_activation = HAL_GetTick();
-    } else {
-        last_box2_activation = HAL_GetTick();
-    }
+    boxes[box_id - 1].last_activation = HAL_GetTick();
     current_state = STATE_MONITOR;
 }
 
 void state_machine_init(void) {
-    DHT11_Init(&dht11);
+    current_state = STATE_WAIT_PASSWORD;
 }
 
 void state_machine_run(void) {

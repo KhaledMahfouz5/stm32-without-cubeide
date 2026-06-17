@@ -5,6 +5,11 @@
 
 static TIM_HandleTypeDef* servo_htim;
 
+static const uint32_t servo_tim_channels[] = {
+    TIM_CHANNEL_3,
+    TIM_CHANNEL_4
+};
+
 static uint16_t map_angle_to_pulse(uint16_t angle) {
     return (angle * (SERVO_MAX_PULSE - SERVO_MIN_PULSE) / 180) + SERVO_MIN_PULSE;
 }
@@ -29,9 +34,7 @@ void Servo_Write(uint8_t channel, uint16_t angle) {
     uint32_t pulse_width = map_angle_to_pulse(angle);
     uint32_t timer_counts = (pulse_width * servo_htim->Init.Period) / 20000;
 
-    if (channel == SERVO_CHANNEL_1) {
-        __HAL_TIM_SET_COMPARE(servo_htim, TIM_CHANNEL_3, timer_counts);
-    } else if (channel == SERVO_CHANNEL_2) {
-        __HAL_TIM_SET_COMPARE(servo_htim, TIM_CHANNEL_4, timer_counts);
+    if (channel >= 1 && channel <= 2) {
+        __HAL_TIM_SET_COMPARE(servo_htim, servo_tim_channels[channel - 1], timer_counts);
     }
 }
