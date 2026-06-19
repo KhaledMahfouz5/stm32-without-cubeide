@@ -37,10 +37,10 @@
     \leavevmode
     \hbox{\begin{beamercolorbox}[wd=.35\paperwidth,ht=2.5ex,dp=1.25ex,center]{author in head/foot}
         \usebeamerfont{author in head/foot}\insertinstitute
-    \end{beamercolorbox}
+    \end{beamercolorbox}%
     \begin{beamercolorbox}[wd=.35\paperwidth,ht=2.5ex,dp=1.25ex,center]{author in head/foot}
         \usebeamerfont{author in head/foot}\insertshorttitle
-    \end{beamercolorbox}
+    \end{beamercolorbox}%
     \begin{beamercolorbox}[wd=.30\paperwidth,ht=2.5ex,dp=1.25ex,center]{author in head/foot}
         \usebeamerfont{author in head/foot}\insertframenumber\,/\,\inserttotalframenumber
     \end{beamercolorbox}}
@@ -88,8 +88,8 @@
     \centering
     \small
     \begin{tikzpicture}[
-        comp/.style={draw,fill=lightcyan,thick,minimum width=2cm,minimum height=0.8cm,rounded corners=2pt},
-        mcu/.style={draw,fill=darkcyan!50,thick,minimum width=5cm,minimum height=1.5cm,rounded corners=3pt},
+        comp/.style={draw,fill=lightcyan,thick,minimum width=2cm,minimum height=0.8cm,rounded corners=2pt,align=center},
+        mcu/.style={draw,fill=darkcyan!50,thick,minimum width=5cm,minimum height=1.5cm,rounded corners=3pt,align=center},
         arrow/.style={thick,->,>=stealth},
     ]
 
@@ -155,79 +155,79 @@
     \end{block}
 \end{frame}
 
-\begin{frame}[fragile]{State Machine}
+\begin{frame}{State Machine Execution Flow}
     \centering
-    \footnotesize
-    \begin{verbatim}
-+----------+   +----------+   +----------+   +----------+
-| PASSWORD |-->| TIMER_A  |-->| TIMER_B  |-->| MONITOR  |
-|(4 digits)|   |(Box A s) |   |(Box B s) |   |(countdown)|
-+----------+   +----------+   +----------+   +--+----+---+
-                                                |    |
-                                              A |    | B
-                                                |    |
-                                          +-----+    +-----+
-                                          |                |
-                                     +----v----+    +----v----+
-                                     | ACTIVE_1|    | ACTIVE_2|
-                                     |servo+LED|    |servo+LED|
-                                     | PIN+*   |    | PIN+*   |
-                                     |  close  |    |  close  |
-                                     +----+----+    +----+----+
-                                          |                |
-                                          +-------+--------+
-                                                  |
-                                               +--v---+
-                                               |LOOP  |
-                                               |to M. |
-                                               +-------+
-    \end{verbatim}
+    \begin{tikzpicture}[
+        state/.style={draw, fill=lightcyan, thick, rounded corners=4pt, minimum width=2.6cm, minimum height=0.9cm, align=center, font=\footnotesize},
+        active/.style={draw, fill=mediumcyan, text=white, thick, rounded corners=4pt, minimum width=2.8cm, minimum height=1.1cm, align=center, font=\footnotesize},
+        arrow/.style={very thick, ->, >=stealth, darkcyan},
+        lbl/.style={font=\scriptsize\bfseries\sffamily, color=darkcyan!90!black}
+    ]
+
+    % Vertical Sequence Setup
+    \node[state] (pw)  at (0, 3.8)  {\textbf{PASSWORD}\\[1pt](4-digit Init)};
+    \node[state] (ta)  [below=0.4cm of pw] {\textbf{TIMER\_A}\\[1pt](Set Box A)};
+    \node[state] (tb)  [below=0.4cm of ta] {\textbf{TIMER\_B}\\[1pt](Set Box B)};
+    \node[state, fill=darkcyan, text=white, minimum width=3.2cm] (mon) [below=0.6cm of tb] {\textbf{MONITOR MAIN}\\[1pt](Active Countdown)};
+
+    % Response Blocks shifted down for layout breathing space
+    \node[active] (a1) at (-2.4, -2.3) {\textbf{ACTIVE\_1 (Box A)}\\[2pt]Servo A Open + LED\\Requires PIN to Close};
+    \node[active] (a2) at (2.4, -2.3)  {\textbf{ACTIVE\_2 (Box B)}\\[2pt]Servo B Open + LED\\Requires PIN to Close};
+
+    % Linear Descent Path
+    \draw[arrow] (pw) -- (ta);
+    \draw[arrow] (ta) -- (tb);
+    \draw[arrow] (tb) -- (mon);
+    
+    % Split Branch Paths
+    \draw[arrow] (mon.south) -- ++(0,-0.4) -| (a1.north);
+    \draw[arrow] (mon.south) -- ++(0,-0.4) -| (a2.north);
+    
+    % Labels positioned cleanly higher up in white gaps
+    \node[lbl, left=0.4cm of mon.south west, yshift=0.1cm] {Alarm A Fire};
+    \node[lbl, right=0.4cm of mon.south east, yshift=0.1cm] {Alarm B Fire};
+    
+    % Loopback Paths targeting the mid-point anchor cleanly
+    \draw[arrow] (a1.west) -- ++(-0.6,0) |- ($(tb.south)!0.5!(mon.north)$);
+    \draw[arrow] (a2.east) -- ++(0.6,0) |- ($(tb.south)!0.5!(mon.north)$);
+
+    \end{tikzpicture}
 \end{frame}
 
-\begin{frame}{Lessons Learned}
+\begin{frame}{Lessons Learned: Hardware \& Software}
     \begin{columns}[t]
         \column{0.48\textwidth}
-        \textbf{Hardware lessons:}
+        \textbf{Hardware Design:}
         \begin{itemize}
-            \item Always verify TIM channel mapping against
-                  the MCU datasheet (PB0/1 = CH3/4, not CH1/2)
-            \item Check pin conflicts early --- UART, DHT11,
-                  and keypad all wanted PA2/PA3
-            \item PC13 has an on-board pull-up resistor;
-                  suitable for DHT11 data line
-        \end{itemize}
-
-        \vspace{8pt}
-        \textbf{Protocol lessons:}
-        \begin{itemize}
-            \item PCF8574 I2C backpack for HD44780 LCD
-                  needs correct nibble-split with enable
-                  toggling --- most example code online is wrong
-            \item DHT11 single-wire requires $\mu$s precision;
-                  DWT cycle counter is the cleanest solution
+            \item Always verify TIM channel mapping against the MCU datasheet (\texttt{PB0/PB1 = CH3/CH4}, not \texttt{CH1/CH2}).
+            \item Check pin conflicts early --- UART, DHT11, and keypad matrix all shared requirements for \texttt{PA2/PA3}.
+            \item \texttt{PC13} features an on-board pull-up resistor; highly suitable for the DHT11 single-wire data line.
         \end{itemize}
 
         \column{0.48\textwidth}
-        \textbf{Software design lessons:}
+        \textbf{Software Engineering:}
         \begin{itemize}
-            \item Data tables beat if/else chains ---
-                  always prefer lookup tables over conditionals
-            \item Each module should own its own
-                  hardware resource definitions (pin, port, etc.)
-            \item Shared utilities (like \texttt{delay.c})
-                  eliminate code duplication
-            \item Separate peripheral init from
-                  business logic --- init in main.c,
-                  state machine only handles transitions
+            \item Data tables beat complex \texttt{if/else} chains --- favor clean lookup arrays over nested conditionals.
+            \item Modular isolation: each driver module encapsulates its own peripheral port and pin configurations.
+            \item Abstract peripheral initialization from execution logic --- configure inside \texttt{main.c} and manage states globally.
+        \end{itemize}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Lessons Learned: Protocols \& Toolchain}
+    \begin{columns}[t]
+        \column{0.48\textwidth}
+        \textbf{Protocols \& Interfacing:}
+        \begin{itemize}
+            \item The PCF8574 I2C expansion backpack for the HD44780 LCD requires accurate high/low nibble-splitting with precise enable-bit toggling delays.
+            \item DHT11 strict single-wire timing requires microsecond-level precision; using the ARM Cortex-M3 DWT cycle counter provides the cleanest jitter-free implementation.
         \end{itemize}
 
-        \vspace{8pt}
-        \textbf{Toolchain lessons:}
+        \column{0.48\textwidth}
+        \textbf{Toolchain \& Workflow:}
         \begin{itemize}
-            \item Pure CMake + GCC + OpenOCD works
-                  well and avoids vendor lock-in
-            \item GDB debugging over ST-Link
-                  is fast and reliable
+            \item Standardizing on a raw \texttt{CMake + GCC + OpenOCD} workflow eliminates IDE and vendor software lock-in completely.
+            \item Direct GDB debugging over a native ST-Link hardware interface provides fast, hardware-level register inspections and seamless execution tracing.
         \end{itemize}
     \end{columns}
 \end{frame}
@@ -235,19 +235,21 @@
 \begin{frame}{Thank You}
     \centering
     \vfill
-    {\Huge Questions?}
+    {\Large\color{darkcyan}\textbf{Questions?}}
     \vfill
-    \textbf{Repository:} \texttt{github.com/KhaledMahfouz5/stm32-without-cubeide}
-
+    
+    \begin{block}{Project Repository}
+        \centering
+        \texttt{github.com/KhaledMahfouz5/stm32-without-cubeide}
+    \end{block}
+    
+    \vfill
+    
+    \small
+    \textbf{Development Environment \& Ecosystem:} \\
     \medskip
-    \textbf{Built with:}
-    \begin{itemize}
-        \item GCC \texttt{arm-none-eabi}, CMake, OpenOCD
-        \item STM32CubeF1 HAL (submodule)
-        \item ST-Link programmer
-    \end{itemize}
+    GCC \texttt{arm-none-eabi} \ \textperiodcentered \ \ CMake \ \textperiodcentered \ \ OpenOCD \ \textperiodcentered \ \ STM32CubeF1 HAL \ \textperiodcentered \ \ ST-Link V2
     \vfill
 \end{frame}
 
 \end{document}
-
