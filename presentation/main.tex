@@ -31,6 +31,9 @@
 \usepackage{tikz}
 \usetikzlibrary{shapes,arrows,positioning,fit,calc}
 
+% The key to the mystery: include the svg package to render vector formats
+\usepackage{svg} 
+
 \setbeamertemplate{navigation symbols}{}
 
 \setbeamertemplate{footline}{
@@ -55,7 +58,7 @@
 }
 
 \title[Smart Pharmacy]{STM32 Smart Pharmacy}
-\subtitle{Bare-Metal Medication Dispenser on STM32F103C8T6}
+\subtitle{Under the supervision of Eng. Yahya Al-Tawil \\ Embedded Systems Course}
 \author{Khaled Mahfouz + Bilal Almaraashli}
 \institute{Damascus University CAE}
 \date{\today}
@@ -63,6 +66,21 @@
 \begin{document}
 
 \begin{frame}
+    % Three-logo header layout utilizing absolute page positioning
+    \begin{tikzpicture}[remember picture,overlay]
+        % Left Logo
+        \node[anchor=north west, xshift=0.6cm, yshift=-0.5cm] at (current page.north west) {
+            \includesvg[height=1.5cm]{college.svg}
+        };
+        % Center Logo
+        \node[anchor=north, yshift=-0.5cm] at (current page.north) {
+            \includesvg[height=1.5cm]{pharmacy.svg}
+        };
+        % Right Logo
+        \node[anchor=north east, xshift=-0.6cm, yshift=-0.5cm] at (current page.north east) {
+            \includesvg[height=1.5cm]{university.svg}
+        };
+    \end{tikzpicture}
     \titlepage
 \end{frame}
 
@@ -121,40 +139,6 @@
     Clocks: HSE 8\,MHz $\rightarrow$ PLL $\rightarrow$ 72\,MHz
 \end{frame}
 
-\begin{frame}[fragile]{Software Overview}
-    \textbf{Modular design --- each module does one thing:}
-
-    \medskip
-    \begin{columns}[t]
-        \column{0.48\textwidth}
-        \begin{itemize}
-            \item \texttt{keypad.c} --- 4$\times$4 scan, debounce
-            \item \texttt{servo.c} --- TIM3 PWM control
-            \item \texttt{lcd.c} --- I2C HD44780 driver
-            \item \texttt{dht11.c} --- single-wire protocol
-            \item \texttt{buzzer.c} --- DWT-based tone gen.
-        \end{itemize}
-
-        \column{0.48\textwidth}
-        \begin{itemize}
-            \item \texttt{actuator.c} --- box LED control
-            \item \texttt{state\_machine.c} --- app logic
-            \item \texttt{error\_handler.c} --- fatal errors
-            \item \texttt{delay.c} --- DWT microsecond delay
-            \item \texttt{CMake + GCC + OpenOCD} --- toolchain
-        \end{itemize}
-    \end{columns}
-
-    \vfill
-    \begin{block}{Build \& Flash}
-        \texttt{cmake -Bbuild \&\& cmake --build build \&\& cmake --build build --target flash}
-    \end{block}
-
-    \begin{block}{Debug}
-        \texttt{openocd \ldots \&\& arm-none-eabi-gdb -x .gdbinit build/blink.elf}
-    \end{block}
-\end{frame}
-
 \begin{frame}{State Machine Execution Flow}
     \centering
     \begin{tikzpicture}[
@@ -192,6 +176,40 @@
     \draw[arrow] (a2.east) -- ++(0.6,0) |- ($(tb.south)!0.5!(mon.north)$);
 
     \end{tikzpicture}
+\end{frame}
+
+\begin{frame}[fragile]{Software Overview}
+    \textbf{Modular design --- each module does one thing:}
+
+    \medskip
+    \begin{columns}[t]
+        \column{0.48\textwidth}
+        \begin{itemize}
+            \item \texttt{keypad.c} --- 4$\times$4 scan, debounce
+            \item \texttt{servo.c} --- TIM3 PWM control
+            \item \texttt{lcd.c} --- I2C HD44780 driver
+            \item \texttt{dht11.c} --- single-wire protocol
+            \item \texttt{buzzer.c} --- DWT-based tone gen.
+        \end{itemize}
+
+        \column{0.48\textwidth}
+        \begin{itemize}
+            \item \texttt{actuator.c} --- box LED control
+            \item \texttt{state\_machine.c} --- app logic
+            \item \texttt{error\_handler.c} --- fatal errors
+            \item \texttt{delay.c} --- DWT microsecond delay
+            \item \texttt{CMake + GCC + OpenOCD} --- toolchain
+        \end{itemize}
+    \end{columns}
+
+    \vfill
+    \begin{block}{Build \& Flash}
+        \texttt{cmake -Bbuild \&\& cmake --build build \&\& cmake --build build --target flash}
+    \end{block}
+
+    \begin{block}{Debug}
+        \texttt{openocd \ldots \&\& arm-none-eabi-gdb -x .gdbinit build/blink.elf}
+    \end{block}
 \end{frame}
 
 \begin{frame}{Lessons Learned: Hardware \& Software}
